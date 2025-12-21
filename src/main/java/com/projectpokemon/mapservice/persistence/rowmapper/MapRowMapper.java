@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class MapRowMapper implements RowMapper<RouteMap> {
     @Override
     public RouteMap mapRow(ResultSet rs, int rowNum) throws SQLException {
-        new RouteMap(
+        return new RouteMap(
                 rs.getInt("id"),
                 rs.getString("name"),
                 MapType.valueOf(rs.getString("type").toUpperCase()));
