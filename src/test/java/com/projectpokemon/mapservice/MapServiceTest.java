@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +49,9 @@ class MapServiceTest {
         when(mockMapDAO.getAllMaps()).thenReturn(Arrays.asList(routeMap1, routeMap2));
 
         List<RouteMap> actual = mapService.getAllMaps();
-        
+
+        assertEquals(2, actual.size());
+
         assertEquals(ID_1, actual.getFirst().getId());
         assertEquals(NAME_1, actual.getFirst().getName());
         assertEquals(MapType.GRASS_ROUTE, actual.getFirst().getType());
@@ -56,5 +59,16 @@ class MapServiceTest {
         assertEquals(ID_2, actual.get(1).getId());
         assertEquals(NAME_2, actual.get(1).getName());
         assertEquals(MapType.GRASS_ROUTE, actual.get(1).getType());
+    }
+
+    @Test
+    void get_map_by_id() {
+        when(mockMapDAO.getMapById(anyInt())).thenReturn(routeMap1);
+
+        RouteMap actual = mapService.getMapById(ID_1);
+
+        assertEquals(ID_1, actual.getId());
+        assertEquals(NAME_1, actual.getName());
+        assertEquals(MapType.GRASS_ROUTE, actual.getType());
     }
 }
