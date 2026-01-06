@@ -1,4 +1,4 @@
-package com.projectpokemon.mapservice;
+package com.projectpokemon.mapservice.service;
 
 import com.projectpokemon.mapservice.objects.RouteMap;
 import com.projectpokemon.mapservice.persistence.MapDAO;
