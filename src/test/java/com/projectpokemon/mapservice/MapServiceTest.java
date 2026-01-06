@@ -1,8 +1,8 @@
-package com.projectpokemon.mapservice.persistence;
+package com.projectpokemon.mapservice;
 
 import com.projectpokemon.mapservice.enums.MapType;
 import com.projectpokemon.mapservice.objects.RouteMap;
-import com.projectpokemon.mapservice.persistence.rowmapper.MapRowMapper;
+import com.projectpokemon.mapservice.persistence.MapDAO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -11,22 +11,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class MapDAOTest {
-
-    private static final String SELECT_ALL = "SELECT * from route_maps";
-    private static final String SELECT_BY_ID = "SELECT * from route_maps WHERE id = ?";
+class MapServiceTest {
 
     private static final int ID_1 = 30;
     private static final int ID_2 = 37;
@@ -35,16 +29,13 @@ class MapDAOTest {
     private static final String NAME_2 = "Verdant Field";
 
     @Mock
-    JdbcTemplate mockJdbcTemplate;
-    @Mock
-    MapRowMapper mockRowMapper;
+    MapDAO mockMapDAO;
 
     @InjectMocks
-    private MapDAO mapDAO;
+    MapService mapService;
 
     private RouteMap routeMap1;
     private RouteMap routeMap2;
-
 
     @BeforeEach
     void setUp() {
@@ -53,12 +44,11 @@ class MapDAOTest {
     }
 
     @Test
-    void can_select_all() {
-        when(mockJdbcTemplate.query(eq(SELECT_ALL), eq(mockRowMapper))).thenReturn(Arrays.asList(routeMap1, routeMap2));
-        List<RouteMap> actual = mapDAO.getAllMaps();
+    void get_all_maps() {
+        when(mockMapDAO.getAllMaps()).thenReturn(Arrays.asList(routeMap1, routeMap2));
 
-        verify(mockJdbcTemplate).query(eq(SELECT_ALL), eq(mockRowMapper));
-
+        List<RouteMap> actual = mapService.getAllMaps();
+        
         assertEquals(ID_1, actual.getFirst().getId());
         assertEquals(NAME_1, actual.getFirst().getName());
         assertEquals(MapType.GRASS_ROUTE, actual.getFirst().getType());
@@ -67,17 +57,4 @@ class MapDAOTest {
         assertEquals(NAME_2, actual.get(1).getName());
         assertEquals(MapType.GRASS_ROUTE, actual.get(1).getType());
     }
-
-    @Test
-    void select_by_id() {
-        when(mockJdbcTemplate.queryForObject(eq(SELECT_BY_ID), eq(mockRowMapper), eq(ID_2))).thenReturn(routeMap2);
-        RouteMap actual = mapDAO.getMapById(ID_2);
-
-        verify(mockJdbcTemplate).queryForObject(eq(SELECT_BY_ID), eq(mockRowMapper), eq(ID_2));
-
-        assertEquals(ID_2, actual.getId());
-        assertEquals(NAME_2, actual.getName());
-        assertEquals(MapType.GRASS_ROUTE, actual.getType());
-    }
-
 }
